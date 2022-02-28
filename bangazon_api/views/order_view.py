@@ -1,4 +1,5 @@
 from datetime import datetime
+from django.forms import ValidationError
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import status
@@ -44,7 +45,22 @@ class OrderView(ViewSet):
             return Response(None, status=status.HTTP_204_NO_CONTENT)
         except Order.DoesNotExist as ex:
             return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
-
+    # def update(self,request, pk=None):
+    #     """Handle put request for an order 
+    #     Returns:
+    #         Response -- Empty body with 204 status code
+    #     """
+    #     try:
+    #         order = Order.objects.get(pk=pk)
+    #         order.created_on = request.data["created_on"]
+    #         order.completed_on = request.data["completed_on"]
+    #         order.payment_type_id = request.data["payment_type_id"]
+    #         order.user_id = request.data["user_id"]
+    #         order.save()
+    #         return Response(None, status=status.HTTP_204_NO_CONTENT)
+    #     except ValidationError as ex:
+    #         return Response({'message': ex.args[0]}, status=status.HTTP_400_BAD_REQUEST)
+         
     @swagger_auto_schema(method='put', request_body=UpdateOrderSerializer, responses={
         200: openapi.Response(
             description="Returns a message that the order was completed",
