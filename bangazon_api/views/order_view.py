@@ -45,21 +45,7 @@ class OrderView(ViewSet):
             return Response(None, status=status.HTTP_204_NO_CONTENT)
         except Order.DoesNotExist as ex:
             return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
-    # def update(self,request, pk=None):
-    #     """Handle put request for an order 
-    #     Returns:
-    #         Response -- Empty body with 204 status code
-    #     """
-    #     try:
-    #         order = Order.objects.get(pk=pk)
-    #         order.created_on = request.data["created_on"]
-    #         order.completed_on = request.data["completed_on"]
-    #         order.payment_type_id = request.data["payment_type_id"]
-    #         order.user_id = request.data["user_id"]
-    #         order.save()
-    #         return Response(None, status=status.HTTP_204_NO_CONTENT)
-    #     except ValidationError as ex:
-    #         return Response({'message': ex.args[0]}, status=status.HTTP_400_BAD_REQUEST)
+   
          
     @swagger_auto_schema(method='put', request_body=UpdateOrderSerializer, responses={
         200: openapi.Response(
@@ -105,6 +91,7 @@ class OrderView(ViewSet):
             order = Order.objects.get(
                 completed_on=None, user=request.auth.user)
             serializer = OrderSerializer(order)
+            order.save()
             return Response(serializer.data)
         except Order.DoesNotExist:
             return Response({

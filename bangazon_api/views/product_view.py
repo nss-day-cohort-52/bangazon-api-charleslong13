@@ -160,17 +160,17 @@ class ProductView(ViewSet):
     def list(self, request):
         """Get a list of all products"""
         products = Product.objects.all()
-
-        number_sold = request.query_params.get('number_sold', None)
+# might be number_purchased 
+        number_purchased = request.query_params.get('number_sold', None)
         category = request.query_params.get('category', None)
         order = request.query_params.get('order_by', None)
         direction = request.query_params.get('direction', None)
         name = request.query_params.get('name', None)
 
-        if number_sold:
+        if number_purchased:
             products = products.annotate(
                 order_count=Count('orders')
-            ).filter(order_count__lt=number_sold)
+            ).filter(order_count__lt=number_purchased)
 
         if order is not None:
             order_filter = f'-{order}' if direction == 'desc' else order
