@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from django.db.models import Count
+from django.db.models import Count, Q
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import status
@@ -160,19 +160,24 @@ class ProductView(ViewSet):
     def list(self, request):
         """Get a list of all products"""
         products = Product.objects.all()
+        # orderProducts = Order.objects.get(products = request.data['products'])
 # might be number_purchased 
-        number_purchased = request.query_params.get('number_sold', None)
+        number_sold = request.query_params.get('number_sold', None)
         category = request.query_params.get('category', None)
         order = request.query_params.get('order_by', None)
         direction = request.query_params.get('direction', None)
         name = request.query_params.get('name', None)
-
-        if number_purchased:
+        location = request.query_params.get('location', None)
+        
+        if number_sold:
             products = products.annotate(
-                order_count=Count('orders')
-            ).filter(order_count__lt=number_purchased)
-
-        if order is not None:
+                # double underscore is how you access the property when nested (i.e. orders__payment_type)
+                # filter is getting passed in as a parameter so we will use a comma instead of dot notation 
+                order_count=Count('orders', filter=~Q(orders__payment_type=None))
+            ).filter(order_count__gte =number_sold)
+        if location:
+            products = products.filter(location__contains=(location))
+        if order:
             order_filter = f'-{order}' if direction == 'desc' else order
             products = products.order_by(order_filter)
 
