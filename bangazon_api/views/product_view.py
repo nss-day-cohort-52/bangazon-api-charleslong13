@@ -160,14 +160,13 @@ class ProductView(ViewSet):
     def list(self, request):
         """Get a list of all products"""
         products = Product.objects.all()
-        # orderProducts = Order.objects.get(products = request.data['products'])
-# might be number_purchased 
         number_sold = request.query_params.get('number_sold', None)
         category = request.query_params.get('category', None)
         order = request.query_params.get('order_by', None)
         direction = request.query_params.get('direction', None)
         name = request.query_params.get('name', None)
         location = request.query_params.get('location', None)
+        min_price = request.query_params.get('min_price', None)
         
         if number_sold:
             products = products.annotate(
@@ -175,8 +174,14 @@ class ProductView(ViewSet):
                 # filter is getting passed in as a parameter so we will use a comma instead of dot notation 
                 order_count=Count('orders', filter=~Q(orders__payment_type=None))
             ).filter(order_count__gte =number_sold)
-        if location:
+        
+        if min_price is not None:
+            products = products.filter(price__gte = min_price)
+            
+        if location is not None:
+            # using __contains to filter by location(i.e. state)
             products = products.filter(location__contains=(location))
+            
         if order:
             order_filter = f'-{order}' if direction == 'desc' else order
             products = products.order_by(order_filter)
