@@ -9,6 +9,7 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from bangazon_api.helpers import STATE_NAMES
 from bangazon_api.models import Product, Store, Category, Order, Rating, Recommendation
+from bangazon_api.models.like import Like
 from bangazon_api.serializers import (
     ProductSerializer, CreateProductSerializer, MessageSerializer,
     AddProductRatingSerializer, AddRemoveRecommendationSerializer)
@@ -188,7 +189,7 @@ class ProductView(ViewSet):
 
         if category is not None:
             products = products.filter(category__id=category)
-
+# __icontains is like contains but case insensitive 
         if name is not None:
             products = products.filter(name__icontains=name)
 
@@ -354,3 +355,31 @@ class ProductView(ViewSet):
             )
 
         return Response({'message': 'Rating added'}, status=status.HTTP_201_CREATED)
+
+    @action(methods=['post'], detail=True)
+    def like(self, request, pk):
+        """using post method to like a product for the current user
+        """
+        try:
+            product = Product.objects.get(pk=pk)
+            user = request.auth.user
+            like = Like()
+            like.product_id = product.id
+            like.customer_id = user.id
+            like.save()
+            return Response({'message': "You liked this store!"}, status=status.HTTP_201_CREATED)
+        except (Product.DoesNotExist) as ex:
+            return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
+
+
+    @action(methods=['delete'], detail=True)
+    def unlike(self, request, pk):
+        """delete liked product
+        """
+        try:
+            like = Like.objects.get(product_id=pk, customer_id=request.auth.user.id)
+            like.delete()
+            return Response({'message': "You un-liked this product!"},
+                            status=status.HTTP_201_CREATED)
+        except (Product.DoesNotExist) as ex:
+            return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)

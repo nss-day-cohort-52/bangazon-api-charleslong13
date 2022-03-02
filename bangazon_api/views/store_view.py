@@ -107,7 +107,7 @@ class StoreView(ViewSet):
         
     @action(methods=['post'], detail=True)
     def favorite(self, request, pk):
-        """create a favorite store for the current user
+        """using post method to favorite a store for the current user
         """
         try:
             store = Store.objects.get(pk=pk)
@@ -123,7 +123,7 @@ class StoreView(ViewSet):
 
     @action(methods=['delete'], detail=True)
     def unfavorite(self, request, pk):
-        """delete favorite store
+        """delete favorited store
         """
         try:
             favorite = Favorite.objects.get(store_id=pk, customer_id=request.auth.user.id)
