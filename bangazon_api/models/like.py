@@ -8,4 +8,4 @@ class Like(models.Model):
     product = models.ForeignKey("Product", on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'{self.product.name} favorited by {self.customer.get_full_name()}'
+        return f'{self.product.name} liked by {self.customer.get_full_name()}'
