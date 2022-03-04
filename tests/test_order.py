@@ -1,3 +1,4 @@
+from xmlrpc.client import DateTime
 from rest_framework import status
 from rest_framework.test import APITestCase
 from rest_framework.authtoken.models import Token
@@ -5,6 +6,7 @@ from django.core.management import call_command
 from django.contrib.auth.models import User
 
 from bangazon_api.models import Order, Product
+from bangazon_api.models.payment_type import PaymentType
 
 
 class OrderTests(APITestCase):
@@ -35,7 +37,11 @@ class OrderTests(APITestCase):
         self.client.credentials(
             HTTP_AUTHORIZATION=f'Token {self.token.key}')
 
-        
+        self.payment_type_id = PaymentType.objects.create(
+            merchant_name = "VISA 16 digit",
+            acct_number = 	6759504019261234,
+            customer_id = 1
+        )
         
     def test_list_orders(self):
         """The orders list should return a list of orders for the logged in user
@@ -52,5 +58,16 @@ class OrderTests(APITestCase):
         response = self.client.delete(f'/api/orders/{self.order1.id}')
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
-    
-   
+    def test_complete_order(self):
+        """make sure you can complete an order
+        """
+        data = {
+            "paymentTypeId": self.payment_type_id.id
+            
+        }
+        
+        response = self.client.put(f'/api/orders/{self.order1.id}/complete', data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        order = Order.objects.get(pk = self.order1.id)
+        self.assertEqual(order.payment_type_id, data['paymentTypeId'])
+        self.assertIsNotNone(order.completed_on)
