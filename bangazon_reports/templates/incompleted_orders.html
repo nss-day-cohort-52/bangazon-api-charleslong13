@@ -1,0 +1,29 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Bangazon Reports</title>
+  </head>
+  <body>
+    <h1>Incompleted Orders</h1>
+
+    <ul>
+        {% if incompleted_orders_list%}
+        {% comment %} the | in the line below is a filter and will return the length of the items in the list {% endcomment %}
+            <h2>{{incompleted_orders_list|length}} 
+                Incompleted Orders:</h2>
+            {% for order in incompleted_orders_list %}
+            <ul>
+                <h3>{{order.customer_name}}</h3>
+                <p>Order #: {{order.order_id}}</p>
+                <p>Price: {{order.total}} </p>
+                <p>Payment-Type: {{order.payment_type}}</p>
+                <p>Created on: {{order.created_on}}</p>
+            </ul>
+            {% endfor %}
+        {% endif %}
+        {% comment %} Some tags require beginning and ending tags like above {% endcomment %}
+    </ul>
+  </body>
+</html>
