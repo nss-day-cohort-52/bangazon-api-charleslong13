@@ -1,0 +1,27 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Bangazon Reports</title>
+  </head>
+  <body>
+    <h1>Favorited Sellers by Customers</h1>
+
+    <ul>
+        {% if favorited_sellers_by_customers_list%}
+        {% comment %} the | in the line below is a filter and will return the length of the items in the list {% endcomment %}
+            {% for customer in favorited_sellers_by_customers_list %}
+                <h3>{{customer.customer}}</h3>
+                {% comment %} need to loop through stores because there are multiple in store.store {% endcomment %}
+                {% for store in customer.stores %}
+                    <p>Store: {{store.store}}<p>
+            {% endfor %}
+            {% endfor %}
+        {% else %}
+            <p> Sorry! No one has favorited a store!</p>
+        {% endif %}
+        {% comment %} Some tags require beginning and ending tags like above {% endcomment %}
+    </ul>
+  </body>
+</html>
