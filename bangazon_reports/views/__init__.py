@@ -1,2 +1,3 @@
 from .inexpensive_products import InexpensiveProducts
 from .expensive_products import ExpensiveProducts
+from .favorited_sellers_by_customer import FavoritedSellersByCustomer
