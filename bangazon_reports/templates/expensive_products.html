@@ -6,14 +6,14 @@
     <title>Bangazon Reports</title>
   </head>
   <body>
-    <h1>Inexpensive Products (under $1000)</h1>
+    <h1>Expensive Products (over $1000)</h1>
 
     <ul>
-        {% if inexpensive_products_list%}
+        {% if expensive_products_list%}
         {% comment %} the | in the line below is a filter and will return the length of the items in the list {% endcomment %}
-            <h2>{{inexpensive_products_list|length}} 
+            <h2>{{expensive_products_list|length}} 
                 Products:</h2>
-            {% for product in inexpensive_products_list %}
+            {% for product in expensive_products_list %}
             <ul>
                 <h3>{{product.name}}</h3>
                 <p>Store: {{product.store}}</p>
@@ -22,7 +22,7 @@
             </ul>
             {% endfor %}
         {% else %}
-            <p> Sorry! No products under $1,000</p>
+            <p> Sorry! No products over $1,000</p>
         {% endif %}
         {% comment %} Some tags require beginning and ending tags like above {% endcomment %}
     </ul>
