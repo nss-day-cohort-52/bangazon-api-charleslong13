@@ -37,10 +37,8 @@ class OrderTests(APITestCase):
         self.client.credentials(
             HTTP_AUTHORIZATION=f'Token {self.token.key}')
 
-        self.payment_type_id = PaymentType.objects.create(
-            merchant_name = "VISA 16 digit",
-            acct_number = 	6759504019261234,
-            customer_id = 1
+        self.payment_type1 = PaymentType.objects.create(
+            customer=self.user1
         )
         
     def test_list_orders(self):
@@ -62,12 +60,13 @@ class OrderTests(APITestCase):
         """make sure you can complete an order
         """
         data = {
-            "paymentTypeId": self.payment_type_id.id
+            "paymentTypeId": self.payment_type1.id
             
         }
         
         response = self.client.put(f'/api/orders/{self.order1.id}/complete', data, format="json")
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         order = Order.objects.get(pk = self.order1.id)
+        print(order)
         self.assertEqual(order.payment_type_id, data['paymentTypeId'])
         self.assertIsNotNone(order.completed_on)
